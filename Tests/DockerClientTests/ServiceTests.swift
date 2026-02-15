@@ -1,50 +1,56 @@
-import XCTest
-@testable import DockerClientSwift
 import Logging
+import XCTest
+
+@testable import DockerClientSwift
 
 final class ServiceTests: XCTestCase {
-    
+
     var client: DockerClient!
-    
+
     override func setUp() {
         client = DockerClient.testable()
     }
-    
-    override func tearDownWithError() throws {
-        try! client.syncShutdown()
+
+    override func tearDown() async throws {
+        try await client.shutdown()
         // Remove all services in a Docker system `docker service ls -q | xargs echo`
     }
-    
-    func testListingServices() throws {
+
+    func testListingServices() async throws {
         let name = UUID().uuidString
-        let _ = try client.services.create(serviceName: name, image: Image(id: .init("nginx:alpine"))).wait()
-        let services = try client.services.list().wait()
-        
+        _ = try await client.services.create(
+            serviceName: name, image: Image(id: .init("nginx:alpine")))
+        let services = try await client.services.list()
+
         XCTAssert(services.count >= 1)
     }
-    
-    func testUpdateService() throws {
+
+    func testUpdateService() async throws {
         let name = UUID().uuidString
-        let service = try client.services.create(serviceName: name, image: Image(id: .init("nginx:alpine"))).wait()
-        let updatedService = try client.services.update(service: service, newImage: Image(id: "nginx:latest")).wait()
-        
+        let service = try await client.services.create(
+            serviceName: name, image: Image(id: .init("nginx:alpine")))
+        let updatedService = try await client.services.update(
+            service: service, newImage: Image(id: "nginx:latest"))
+
         XCTAssertTrue(updatedService.version > service.version)
     }
-    
-    func testInspectService() throws {
+
+    func testInspectService() async throws {
         let name = UUID().uuidString
-        let service = try client.services.create(serviceName: name, image: Image(id: .init("nginx:alpine"))).wait()
-        XCTAssertNoThrow(try client.services.get(serviceByNameOrId: service.id.value))
+        let service = try await client.services.create(
+            serviceName: name, image: Image(id: .init("nginx:alpine")))
+        let _ = try await client.services.get(serviceByNameOrId: service.id.value)
         XCTAssertEqual(service.name, name)
     }
-    
-    func testCreateService() throws {
+
+    func testCreateService() async throws {
         let name = UUID().uuidString
-        let service = try client.services.create(serviceName: name, image: Image(id: .init("nginx:latest"))).wait()
-        
+        let service = try await client.services.create(
+            serviceName: name, image: Image(id: .init("nginx:latest")))
+
         XCTAssertEqual(service.name, name)
     }
-    
+
     func testParsingDate() {
         XCTAssertNotNil(Date.parseDockerDate("2021-03-12T12:34:10.239624085Z"))
     }

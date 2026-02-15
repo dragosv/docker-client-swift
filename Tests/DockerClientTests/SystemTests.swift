@@ -1,19 +1,20 @@
-import XCTest
-@testable import DockerClientSwift
 import Logging
+import XCTest
+
+@testable import DockerClientSwift
 
 final class SystemTests: XCTestCase {
     var client: DockerClient!
-    
+
     override func setUp() {
         client = DockerClient.testable()
     }
-    
-    override func tearDownWithError() throws {
-        try! client.syncShutdown()
+
+    override func tearDown() async throws {
+        try await client.shutdown()
     }
-    
-    func testDockerVersion() throws {
-        XCTAssertNoThrow(try client.version().wait())
+
+    func testDockerVersion() async throws {
+        let _ = try await client.version()
     }
 }

@@ -14,7 +14,7 @@ extension HTTPClient {
     ///   - deadline: Point in time by which the request must complete.
     ///   - logger: The logger to use for this request.
     ///   - headers: Custom HTTP headers.
-    /// - Returns: Returns an `EventLoopFuture` with the `Response` of the request
+    /// - Returns: Returns the `Response` of the request.
     public func execute(
         _ method: HTTPMethod = .GET, socketPath: String, urlPath: String, body: Body? = nil,
         deadline: NIODeadline? = nil, logger: Logger, headers: HTTPHeaders
@@ -23,6 +23,6 @@ extension HTTPClient {
             throw HTTPClientError.invalidURL
         }
         let request = try Request(url: url, method: method, headers: headers, body: body)
-        return try await self.execute(request: request, deadline: deadline, logger: logger)
+        return try await self.execute(request: request, deadline: deadline, logger: logger).get()
     }
 }

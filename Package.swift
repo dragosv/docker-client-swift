@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "docker-client-swift",
-    platforms: [.macOS(.v12)],
+    platforms: [.macOS(.v13)],
     products: [
         .library(name: "DockerClientSwift", targets: ["DockerClientSwift"])
     ],
