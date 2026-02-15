@@ -1,10 +1,10 @@
 {
-    "name": "TestContainers Swift 6.2",
-    "image": "swift:6.2-jammy",
+    "name": "Docker Client Swift 5.10",
+    "image": "swift:5.10-jammy",
     "customizations": {
         "vscode": {
             "extensions": [
-                "sswg.swift-lang",
+                "swiftlang.swift-vscode",
                 "vadimcn.vscode-lldb"
             ],
             "settings": {
