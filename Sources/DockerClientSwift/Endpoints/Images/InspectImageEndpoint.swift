@@ -24,7 +24,6 @@ struct InspectImagesEndpoint: Endpoint {
         let RepoTags: [String]?
         let RepoDigests: [String]?
         let Size: Int
-        let VirtualSize: Int
         // TODO: Add additional fields
     }
 }

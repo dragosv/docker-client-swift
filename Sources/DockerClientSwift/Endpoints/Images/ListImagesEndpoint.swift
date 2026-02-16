@@ -22,7 +22,6 @@ struct ListImagesEndpoint: Endpoint {
         let RepoDigests: [String]?
         let Created: Int
         let Size: Int
-        let VirtualSize: Int
         let SharedSize: Int
         let Containers: Int
         // TODO: Add additional fields
