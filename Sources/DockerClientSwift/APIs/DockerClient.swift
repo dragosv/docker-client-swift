@@ -41,7 +41,7 @@ public class DockerClient {
     internal func run<T: Endpoint>(_ endpoint: T) async throws -> T.Response {
         logger.info("Execute Endpoint: \(endpoint.path)")
         let response = try await client.execute(
-            endpoint.method, socketPath: daemonSocket, urlPath: "/v1.40/\(endpoint.path)",
+            endpoint.method, socketPath: daemonSocket, urlPath: "/v1.44/\(endpoint.path)",
             body: endpoint.body.map { HTTPClient.Body.data(try! $0.encode()) }, logger: logger,
             headers: HTTPHeaders([("Content-Type", "application/json"), ("Host", "localhost")]))
         response.logResponseBody(logger)
@@ -54,7 +54,7 @@ public class DockerClient {
     internal func run<T: PipelineEndpoint>(_ endpoint: T) async throws -> T.Response {
         logger.info("Execute PipelineEndpoint: \(endpoint.path)")
         let response = try await client.execute(
-            endpoint.method, socketPath: daemonSocket, urlPath: "/v1.40/\(endpoint.path)",
+            endpoint.method, socketPath: daemonSocket, urlPath: "/v1.44/\(endpoint.path)",
             body: endpoint.body.map { HTTPClient.Body.data(try! $0.encode()) }, logger: logger,
             headers: HTTPHeaders([("Content-Type", "application/json"), ("Host", "localhost")]))
         response.logResponseBody(logger)
