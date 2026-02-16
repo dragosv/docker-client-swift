@@ -44,11 +44,11 @@ Enter `https://github.com/alexsteinerde/docker-client-swift.git` for the URL.
 ## Usage Example
 ```swift
 let client = DockerClient()
-let image = try client.images.pullImage(byIdentifier: "hello-world:latest").wait()
-let container = try client.containers.createContainer(image: image).wait()
-try container.start(on: client).wait()
-let output = try container.logs(on: client).wait()
-try client.syncShutdown()
+let image = try await client.images.pullImage(byIdentifier: "hello-world:latest")
+let container = try await client.containers.createContainer(image: image)
+try await container.start(on: client)
+let await output = try container.logs(on: client)
+try await client.syncShutdown()
 print(output)
 ```
 
