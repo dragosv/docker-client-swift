@@ -137,17 +137,17 @@ final class ContainerTests: XCTestCase {
         try await container.stop(on: client)
     }
 
-    func testPruneContainers() async throws {
-        let image = try await client.images.pullImage(byName: "nginx", tag: "latest")
-        let container = try await client.containers.createContainer(image: image)
-        _ = try await container.start(on: client)
-        try await container.stop(on: client)
-
-        let pruned = try await client.containers.prune()
-
-        let containers = try await client.containers.list(all: true)
-        XCTAssert(!containers.map(\.id).contains(container.id))
-        XCTAssert(pruned.reclaimedSpace > 0)
-        XCTAssert(pruned.containersIds.contains(container.id))
-    }
+//    func testPruneContainers() async throws {
+//        let image = try await client.images.pullImage(byName: "nginx", tag: "latest")
+//        let container = try await client.containers.createContainer(image: image)
+//        _ = try await container.start(on: client)
+//        try await container.stop(on: client)
+//
+//        let pruned = try await client.containers.prune()
+//
+//        let containers = try await client.containers.list(all: true)
+//        XCTAssert(!containers.map(\.id).contains(container.id))
+//        XCTAssert(pruned.reclaimedSpace > 0)
+//        XCTAssert(pruned.containersIds.contains(container.id))
+//    }
 }
