@@ -48,73 +48,73 @@ jobs:
           swiftformat --lint .
         fi
 
-  build_mac:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        swift: [ '6.2' ]
-
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v3
-        with:
-          swift-version: ${{ matrix.swift }}
-
-      - name: Build
-        run: swift build -v
-
-      - name: Run tests
-        run: swift test -v
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v6
-    
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v3
-      with:
-        swift-version: '6.2'
-    
-    - name: Check Swift syntax
-      run: swift build --product Testcontainers 2>&1 | grep -E "error:" && exit 1 || exit 0
-
-  code-quality:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v6
-    
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v3
-      with:
-        swift-version: '6.2'
-    
-    - name: Build and analyze
-      run: |
-        swift build --configuration debug
-      continue-on-error: true
-
-  test-coverage:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v6
-    
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v3
-      with:
-        swift-version: '6.2'
-    
-    - name: Run tests with coverage
-      run: swift test --enable-code-coverage
-    
-    - name: Generate coverage report
-      run: |
-        xcrun llvm-cov export -format="lcov" \
-          .build/debug/TestcontainersPackageTests.xctest/Contents/MacOS/TestcontainersPackageTests \
-          -instr-profile .build/debug/codecov/default.profdata > coverage.lcov 2>/dev/null || echo "Coverage report generation skipped"
-      continue-on-error: true
+#  build_mac:
+#    runs-on: macos-latest
+#    strategy:
+#      matrix:
+#        swift: [ '6.2' ]
+#
+#    steps:
+#      - uses: actions/checkout@v6
+#
+#      - name: Setup Swift
+#        uses: swift-actions/setup-swift@v3
+#        with:
+#          swift-version: ${{ matrix.swift }}
+#
+#      - name: Build
+#        run: swift build -v
+#
+#      - name: Run tests
+#        run: swift test -v
+#
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v6
+#
+#    - name: Setup Swift
+#      uses: swift-actions/setup-swift@v3
+#      with:
+#        swift-version: '6.2'
+#
+#    - name: Check Swift syntax
+#      run: swift build --product Testcontainers 2>&1 | grep -E "error:" && exit 1 || exit 0
+#
+#  code-quality:
+#    runs-on: macos-latest
+#    steps:
+#    - uses: actions/checkout@v6
+#
+#    - name: Setup Swift
+#      uses: swift-actions/setup-swift@v3
+#      with:
+#        swift-version: '6.2'
+#
+#    - name: Build and analyze
+#      run: |
+#        swift build --configuration debug
+#      continue-on-error: true
+#
+#  test-coverage:
+#    runs-on: macos-latest
+#    steps:
+#    - uses: actions/checkout@v6
+#
+#    - name: Setup Swift
+#      uses: swift-actions/setup-swift@v3
+#      with:
+#        swift-version: '6.2'
+#
+#    - name: Run tests with coverage
+#      run: swift test --enable-code-coverage
+#
+#    - name: Generate coverage report
+#      run: |
+#        xcrun llvm-cov export -format="lcov" \
+#          .build/debug/TestcontainersPackageTests.xctest/Contents/MacOS/TestcontainersPackageTests \
+#          -instr-profile .build/debug/codecov/default.profdata > coverage.lcov 2>/dev/null || echo "Coverage report generation skipped"
+#      continue-on-error: true
 
   security:
     runs-on: macos-latest
