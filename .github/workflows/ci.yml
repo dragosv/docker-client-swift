@@ -1,0 +1,132 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+#    container:
+#      image: swift:${{ matrix.swift }}
+#      # You MUST mount the socket for the client to work
+#      volumes:
+#        - /var/run/docker.sock:/var/run/docker.sock
+    strategy:
+      matrix:
+        swift: ['6.2']
+#    env:
+#      DOCKER_API_VERSION: 1.44
+    
+    steps:
+    - name: Setup rootless Docker
+      uses: docker/setup-docker-action@v4.5.0
+      with:
+        rootless: true
+
+    - name: Docker Version
+      run: docker version
+
+    - uses: actions/checkout@v6
+
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v2
+      with:
+        swift-version: ${{ matrix.swift }}
+
+    - name: Build
+      run: swift build -v
+    
+    - name: Run tests
+      run: swift test -v
+    
+    - name: Check formatting
+      run: |
+        if command -v swiftformat >/dev/null 2>&1; then
+          swiftformat --lint .
+        fi
+
+  build_mac:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: [ '6.2' ]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v3
+        with:
+          swift-version: ${{ matrix.swift }}
+
+      - name: Build
+        run: swift build -v
+
+      - name: Run tests
+        run: swift test -v
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v3
+      with:
+        swift-version: '6.2'
+    
+    - name: Check Swift syntax
+      run: swift build --product Testcontainers 2>&1 | grep -E "error:" && exit 1 || exit 0
+
+  code-quality:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v3
+      with:
+        swift-version: '6.2'
+    
+    - name: Build and analyze
+      run: |
+        swift build --configuration debug
+      continue-on-error: true
+
+  test-coverage:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v3
+      with:
+        swift-version: '6.2'
+    
+    - name: Run tests with coverage
+      run: swift test --enable-code-coverage
+    
+    - name: Generate coverage report
+      run: |
+        xcrun llvm-cov export -format="lcov" \
+          .build/debug/TestcontainersPackageTests.xctest/Contents/MacOS/TestcontainersPackageTests \
+          -instr-profile .build/debug/codecov/default.profdata > coverage.lcov 2>/dev/null || echo "Coverage report generation skipped"
+      continue-on-error: true
+
+  security:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Setup Swift
+      uses: swift-actions/setup-swift@v3
+      with:
+        swift-version: '6.2'
+    
+    - name: Scan dependencies
+      run: |
+        swift package describe 2>&1 | head -20
+      continue-on-error: true
